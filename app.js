@@ -10,8 +10,8 @@ var express = require("express"),
     seedDB    = require("./seeds");
     
     
- 
-mongoose.connect('mongodb://localhost/yelpCamp');
+//mongodb://skaundin1122:MalharAug2015@ds115768.mlab.com:15768/yelpcamp123 
+mongoose.connect('mongodb://suchita:MalharAug2015!@ds115768.mlab.com:15768/yelpcamp123');
 app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname + "/public"));

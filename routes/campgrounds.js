@@ -9,7 +9,7 @@ router.get("/", function(req,res){
             console.log(err);
         }else{
             console.log(allCampgrounds);
-            res.render("campgrounds/index",{campgrounds:allCampgrounds});
+            res.render("campgrounds/index",{campgrounds:allCampgrounds, currentUser:req.user});
         }
     });
 
@@ -44,7 +44,7 @@ router.get("/:id", function(req,res){
         {
            console.log(req.param.id);
            console.log(foundCampground);
-           res.render("campgrounds/show",{campground:foundCampground});
+           res.render("campgrounds/show",{campground:foundCampground, currentUser:req.user});
         }
     });
     

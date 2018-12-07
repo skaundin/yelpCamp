@@ -5,6 +5,7 @@ var express = require("express"),
     localStratergy = require("passport-local"),
     passport = require("passport"),
     User   = require("./models/user"),
+    methodOverride = require("method-override"),
     seedDB    = require("./seeds");
     
 var campgroundRoutes = require("./routes/campgrounds"),
@@ -17,7 +18,7 @@ mongoose.connect('mongodb://suchita:MalharAug2015!@ds115768.mlab.com:15768/yelpc
 app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname + "/public"));
-
+app.use(methodOverride("_method"));
 app.use(require("express-session")({
     secret: "Honda is my car",
     reSave: false,
@@ -42,6 +43,8 @@ seedDB();
 app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments",commentsRoutes);
 app.use("/",indexRoutes);
+
+
 
 
 app.listen(process.env.PORT, process.env.IP, function(){

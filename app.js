@@ -6,6 +6,7 @@ var express = require("express"),
     passport = require("passport"),
     User   = require("./models/user"),
     methodOverride = require("method-override"),
+    flash = require("connect-flash"),
     seedDB    = require("./seeds");
     
 var campgroundRoutes = require("./routes/campgrounds"),
@@ -19,6 +20,7 @@ app.set("view engine","ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
+app.use(flash());
 app.use(require("express-session")({
     secret: "Honda is my car",
     reSave: false,
@@ -28,6 +30,9 @@ app.use(require("express-session")({
 //defining middleware
 app.use(function(req,res,next){
     res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+
     next();
 });
 
@@ -38,7 +43,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
-seedDB();  
+//seedDB();  
 
 app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments",commentsRoutes);

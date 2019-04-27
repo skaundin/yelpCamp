@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router({mergeParams: true});
 var campground = require("../models/campground");
+var middleware = require("../middleware");
 
 //Campgrounds
 router.get("/", function(req,res){
@@ -16,15 +17,20 @@ router.get("/", function(req,res){
 });
 
 //Adding new campgrounds
-router.get("/new", function(req,res){
+router.get("/new",middleware.isLoggedIn ,function(req,res){
     res.render("campgrounds/new.ejs");
 });
 
-router.post("/",function(req,res){
+//Creating a route 
+router.post("/", middleware.isLoggedIn ,function(req,res){
     var name = req.body.name;
     var image = req.body.image;
     var desc = req.body.description;
-    var newCampground = {name:name,image:image, descscription:desc};
+    var author =  {
+        id: req.user._id,
+        username: req.user.username
+    }
+    var newCampground = {name:name,image:image, descscription:desc, author};
     campground.create(newCampground, function(err,newlyCreated){
         if(err){
             console.log(err);
@@ -32,6 +38,8 @@ router.post("/",function(req,res){
             res.redirect("/campgrounds");
         }
     });
+    
+    
     
 });
 
@@ -51,7 +59,7 @@ router.get("/:id", function(req,res){
 });
 
 //Edit campground
-router.get("/:id/edit", function(req,res){
+router.get("/:id/edit", middleware.checkCampgroundOwnership, function(req,res){
     campground.findById(req.params.id, function(err,foundCampground){
         if(err){
             console.log(err);
@@ -63,7 +71,7 @@ router.get("/:id/edit", function(req,res){
 });
 
 //Update Campground 
-router.put("/:id", function(req,res){
+router.put("/:id", middleware.checkCampgroundOwnership, function(req,res){
 
     campground.findByIdAndUpdate(req.params.id, req.body.campground, function(err, updatedCampground){
         if(err){
@@ -76,7 +84,7 @@ router.put("/:id", function(req,res){
 });
 
 //Delete campground 
-router.delete("/:id", function(req,res){
+router.delete("/:id", middleware.checkCampgroundOwnership, function(req,res){
     campground.findByIdAndRemove(req.params.id,function(err){
         if(err){
             res.redirect("/campgrounds");
@@ -87,15 +95,6 @@ router.delete("/:id", function(req,res){
 });
 
 
-//middleware 
-
-function isLoggedIn(req,res,next){
-    if(req.isAuthenticated()){
-        return next();
-    }else{
-        res.redirect("/login");
-    }
-}
 
 
 module.exports = router;
